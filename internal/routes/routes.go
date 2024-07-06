@@ -4,12 +4,12 @@ import (
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"gorm.io/gorm"
-	"tracking-service-go/internal/config"
 	"tracking-service-go/internal/controllers"
+	"tracking-service-go/internal/service"
 )
 
 func InitRoutes(e *echo.Echo, db *gorm.DB) {
-	var jwtSecret = config.GetEnv("JWT_SECRET", "secret")
+	var jwtSecret = service.GetEnv("JWT_SECRET", "secret")
 	controllers.InitUserRepository(db, jwtSecret)
 
 	// Auth routes

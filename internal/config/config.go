@@ -6,8 +6,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
-	"os"
 	"tracking-service-go/internal/models"
+	"tracking-service-go/internal/service"
 )
 
 type Config struct {
@@ -16,13 +16,6 @@ type Config struct {
 	DBUser     string `mapstructure:"DB_USER"`
 	DBPassword string `mapstructure:"DB_PASSWORD"`
 	DBName     string `mapstructure:"DB_NAME"`
-}
-
-func GetEnv(key string, defaultVal string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
-	}
-	return defaultVal
 }
 
 func InitConfig() (Config, error) {
@@ -34,9 +27,9 @@ func InitConfig() (Config, error) {
 	}
 	config.DBHost = "localhost"
 	config.DBPort = "5432"
-	config.DBUser = GetEnv("DB_USER", "")
-	config.DBPassword = GetEnv("DB_PASSWORD", "")
-	config.DBName = GetEnv("DB_NAME", "")
+	config.DBUser = service.GetEnv("DB_USER", "")
+	config.DBPassword = service.GetEnv("DB_PASSWORD", "")
+	config.DBName = service.GetEnv("DB_NAME", "")
 	return config, err
 }
 
