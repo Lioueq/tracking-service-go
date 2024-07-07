@@ -7,12 +7,42 @@ definitions:
       password:
         type: string
     type: object
+  models.Error:
+    properties:
+      Error message:
+        type: string
+    type: object
+  models.Order:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      userId:
+        type: integer
+    type: object
+  models.OrderCreate:
+    properties:
+      name:
+        type: string
+    type: object
   models.User:
     properties:
       email:
         type: string
       id:
         type: integer
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  models.UserRegister:
+    properties:
+      email:
+        type: string
       name:
         type: string
       password:
@@ -46,12 +76,18 @@ paths:
             additionalProperties:
               type: string
             type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
         "401":
           description: Unauthorized
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
       summary: Login a user
       tags:
       - auth
@@ -66,7 +102,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.UserRegister'
       produces:
       - application/json
       responses:
@@ -77,12 +113,67 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
       summary: Register a new user
       tags:
       - auth
+  /orders:
+    get:
+      description: Get all orders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/models.Order'
+              type: array
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - BearerAuth: []
+      summary: Get all orders
+      tags:
+      - orders
+  /orders/create:
+    post:
+      description: Create order
+      parameters:
+      - description: New Order
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/models.OrderCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Order'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - BearerAuth: []
+      summary: Create order
+      tags:
+      - orders
   /users:
     get:
       description: Get details of all users
@@ -95,7 +186,16 @@ paths:
             items:
               $ref: '#/definitions/models.User'
             type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
       summary: Get all users
       tags:
       - users
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

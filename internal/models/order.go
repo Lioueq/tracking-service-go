@@ -1,8 +1,12 @@
 package models
 
-import "gorm.io/gorm"
-
 type Order struct {
-	gorm.Model
-	Status string `json:"string"`
+	ID     int    `json:"id" gorm:"primaryKey;autoIncrement"`
+	Name   string `json:"name" gorm:"type:varchar(100)"`
+	Status string `json:"status" gorm:"type:varchar(50)"`
+	UserId int    `json:"userId" gorm:"type:int"`
+}
+
+type OrderCreate struct {
+	Name string `json:"name"`
 }

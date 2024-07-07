@@ -25,16 +25,21 @@ func InitUserRepository(db *gorm.DB, secret string) {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param user body models.User true "New User"
+// @Param user body models.UserRegister true "New User"
 // @Success 201 {object} models.User
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} models.Error
+// @Failure 500 {object} models.Error
 // @Router /auth/register [post]
 func Register(c echo.Context) error {
-	var user models.User
-	if err := c.Bind(&user); err != nil {
+	var userCreds models.UserRegister
+	if err := c.Bind(&userCreds); err != nil {
 		fmt.Println(err)
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid data"})
 	}
+	var user models.User
+	user.Name = userCreds.Name
+	user.Email = userCreds.Email
+	user.Password = userCreds.Password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Couldn't hash password"})
@@ -55,7 +60,9 @@ func Register(c echo.Context) error {
 // @Produce json
 // @Param credentials body models.Credentials true "User Credentials"
 // @Success 200 {object} map[string]string
-// @Failure 401 {object} map[string]string
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 500 {object} models.Error
 // @Router /auth/login [post]
 func Login(c echo.Context) error {
 	var credentials models.Credentials
@@ -90,6 +97,7 @@ func Login(c echo.Context) error {
 // @Tags users
 // @Produce json
 // @Success 200 {array} models.User
+// @Failure 500 {object} models.Error
 // @Router /users [get]
 func GetUsers(c echo.Context) error {
 	users, err := userRepo.FindAll()

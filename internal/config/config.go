@@ -41,6 +41,6 @@ func InitDB(cfg Config) (*gorm.DB, error) {
 		log.Fatalf("Error connection to database: %v", err)
 		return nil, err
 	}
-	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.User{}, &models.Order{})
 	return db, nil
 }
