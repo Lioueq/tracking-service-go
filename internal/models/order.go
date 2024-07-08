@@ -10,3 +10,8 @@ type Order struct {
 type OrderCreate struct {
 	Name string `json:"name"`
 }
+
+type OrderUpdate struct {
+	ID     int    `json:"id"`
+	Status string `json:"status"`
+}

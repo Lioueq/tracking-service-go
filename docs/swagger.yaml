@@ -28,6 +28,13 @@ definitions:
       name:
         type: string
     type: object
+  models.OrderUpdate:
+    properties:
+      id:
+        type: integer
+      status:
+        type: string
+    type: object
   models.User:
     properties:
       email:
@@ -51,8 +58,7 @@ definitions:
 host: localhost:8080
 info:
   contact: {}
-  description: This is a sample server for an Echo application with Swagger documentation.
-  title: Echo Swagger Example API
+  title: Tracking service go
   version: "1.0"
 paths:
   /auth/login:
@@ -172,6 +178,44 @@ paths:
       security:
       - BearerAuth: []
       summary: Create order
+      tags:
+      - orders
+  /orders/update:
+    put:
+      description: Update order
+      parameters:
+      - description: Update Order
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/models.OrderUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Error'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - BearerAuth: []
+      summary: Update order
       tags:
       - orders
   /users:

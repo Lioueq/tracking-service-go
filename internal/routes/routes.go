@@ -25,6 +25,7 @@ func InitRoutes(e *echo.Echo, db *gorm.DB) {
 		ContextKey: "id",
 	}))
 	r.GET("", controllers.GetOrders)
+	r.PUT("/update", controllers.UpdateOrder)
 	r.POST("/create", controllers.CreateOrder)
 
 	// Get all users

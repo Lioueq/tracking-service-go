@@ -6,9 +6,8 @@ import (
 	"tracking-service-go/internal/app"
 )
 
-// @title Echo Swagger Example API
+// @title Tracking service go
 // @version 1.0
-// @description This is a sample server for an Echo application with Swagger documentation.
 // @host localhost:8080
 // @BasePath /
 // @securityDefinitions.apikey BearerAuth

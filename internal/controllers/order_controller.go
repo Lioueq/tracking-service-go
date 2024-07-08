@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -48,7 +47,6 @@ func GetOrders(c echo.Context) error {
 func CreateOrder(c echo.Context) error {
 	var orderData models.OrderCreate
 	if err := c.Bind(&orderData); err != nil {
-		fmt.Println(err)
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid data"})
 	}
 	user := c.Get("id").(*jwt.Token)
@@ -62,4 +60,38 @@ func CreateOrder(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Could not create order"})
 	}
 	return c.JSON(http.StatusCreated, createdOrder)
+}
+
+// @Summary Update order
+// @Description Update order
+// @Tags orders
+// @Produce json
+// @Param order body models.OrderUpdate true "Update Order"
+// @Success 200 {object} models.Error
+// @Failure 400 {object} models.Error
+// @Failure 401 {object} models.Error
+// @Failure 404 {object} models.Error
+// @Failure 500 {object} models.Error
+// @Security BearerAuth
+// @Router /orders/update [put]
+func UpdateOrder(c echo.Context) error {
+	var orderData models.OrderUpdate
+	if err := c.Bind(&orderData); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid data"})
+	}
+	user := c.Get("id").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	order, err := orderRepo.FindById(orderData.ID)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"message": "Order not found"})
+	}
+	if order.UserId != int(claims["id"].(float64)) {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Not authorized"})
+	}
+	order.Status = orderData.Status
+	err = orderRepo.UpdateOrder(order)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Could not update order"})
+	}
+	return c.JSON(http.StatusOK, map[string]string{"message": "Ok"})
 }
